@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ff4f91">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/pwa/apple-touch-icon.png">
+  <title>YAFI — Doggo Tamagotchi</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="console-shell"><div class="console-screen">
+  <div id="startScreen" class="start-screen" aria-label="Pantalla de inicio">
+    <img class="start-title" src="assets/start/title.png" alt="YAFI Doggo Tamagotchi">
+    <button id="startButton" class="start-button" type="button" aria-label="Start">
+      <img src="assets/start/button.png" alt="START">
+    </button>
+    <div class="pwa-start-actions" aria-label="Opciones de aplicación">
+      <button id="installAppButton" class="pwa-install-button" type="button" aria-label="Instalar YAFI como aplicación">
+        <img src="assets/pwa/install-button.png" alt="Instalar YAFI">
+      </button>
+      <button id="installHelpButton" class="pwa-help-button" type="button" aria-label="Qué es instalar YAFI">?</button>
+    </div>
+    <div id="installHint" class="pwa-install-hint">INSTALAR YAFI EN EL MÓVIL</div>
+  </div>
+  <div id="installHelpModal" class="install-help-modal hidden" aria-hidden="true">
+    <div class="install-help-box" role="dialog" aria-modal="true" aria-labelledby="installHelpTitle">
+      <button id="installHelpClose" class="install-help-close" type="button" aria-label="Cerrar">×</button>
+      <div class="install-help-icon">📱</div>
+      <h2 id="installHelpTitle">¿QUÉ ES INSTALAR YAFI?</h2>
+      <p>Convierte esta web en una pequeña app en tu móvil. Tendrás un icono de <b>YAFI</b> en la pantalla de inicio y podrás abrir el juego directamente, sin buscar la web cada vez.</p>
+      <div class="install-help-steps">
+        <div><b>🤖 Android</b><br>Si aparece la instalación, pulsa <b>Instalar</b>. Si no aparece, abre el menú de Chrome y elige <b>Instalar aplicación</b> o <b>Añadir a pantalla de inicio</b>.</div>
+        <div><b>🍎 iPhone</b><br>En Safari pulsa <b>Compartir → Añadir a pantalla de inicio → Añadir</b>.</div>
+      </div>
+      <button id="installHelpOk" class="primary install-help-ok" type="button">ENTENDIDO</button>
+    </div>
+  </div>
+  <div id="usernameScreen" class="username-screen hidden" aria-hidden="true">
+    <div class="username-box">
+      <div class="username-kicker">PRIMERA VEZ</div>
+      <h2>¿QUIÉN ERES?</h2>
+      <p>Elige el nombre que aparecerá en YAFI.</p>
+      <form id="usernameForm">
+        <input id="usernameInput" name="username" type="text" maxlength="20" minlength="2" autocomplete="nickname" placeholder="Tu nombre..." required>
+        <div id="firebaseStatus" class="firebase-status firebase-ok">🟢 Modo local · sin Firebase</div>
+        <button class="primary username-submit" type="submit">ENTRAR</button>
+      </form>
+    </div>
+  </div>
+  <main id="app">
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">TAMAGOTCHI</div>
+      <h1>YAFI</h1>
+    </div>
+    <div class="top-controls"><button id="musicToggle" class="music-toggle" type="button" title="Mutear música de fondo" aria-label="Mutear música de fondo"><img src="assets/audio/music-note.png" alt=""><span id="musicToggleIcon">🎵</span><small id="musicToggleLabel">ON</small></button><div class="coins">⭐ <span id="points">0</span></div></div>
+  </header>
+
+  <section class="game-card">
+    <div class="room">
+      <div id="roomItems" class="room-items" aria-label="Decoración de la habitación"></div><div id="toyItems" class="toy-items" aria-label="Juguetes del perro"></div>
+      <div class="chico-companion hidden-chico" id="chicoCompanion" aria-label="Rasta, la mascota del perro">
+        <img id="chicoSprite" src="assets/chico/chico_de_pie_normal.png" alt="Rasta">
+      </div>
+      <div class="sprite-wrap">
+        <div id="spriteBubble" class="tiny-heart">♡</div>
+        <button id="yafiHitbox" class="yafi-hitbox" type="button" aria-label="Tocar a Yafi"></button>
+        <img id="iahn" class="iahn" src="assets/faces/perro_normal.png" alt="Yafi">
+        <div class="shadow"></div>
+      </div>
+      <div id="rastaSpeech" class="speech speech-rasta" aria-live="polite"></div><div id="yafiSpeech" class="speech speech-yafi" aria-live="polite">🐶 YAFI: ¿Qué hacemos hoy?</div>
+      <div id="effect" class="effect"></div>
+    </div>
+
+    <section class="stats" aria-label="Estado de Yafi">
+      <div class="stat mood"><div class="stat-head"><span class="stat-name"><b class="stat-symbol">♥</b> ÁNIMO</span><strong id="moodValue">78%</strong></div><div class="bar"><i id="moodBar"></i><span></span></div></div>
+      <div class="stat hunger"><div class="stat-head"><span class="stat-name"><b class="stat-symbol">🍕</b> HAMBRE</span><strong id="hungerValue">62%</strong></div><div class="bar"><i id="hungerBar"></i><span></span></div></div>
+      <div class="stat energy"><div class="stat-head"><span class="stat-name"><b class="stat-symbol">ϟ</b> ENERGÍA</span><strong id="energyValue">85%</strong></div><div class="bar"><i id="energyBar"></i><span></span></div></div>
+      <div class="stat health"><div class="stat-head"><span class="stat-name"><b class="stat-symbol">♨</b> SALUD</span><strong id="healthValue">90%</strong></div><div class="bar"><i id="healthBar"></i><span></span></div></div>
+    </section>
+
+    <div class="main-actions" aria-label="Acciones principales">
+      <button class="action food" data-open="food" title="Comer" aria-label="Comer"><img src="assets/button-icons/comer.png" alt=""></button>
+      <button class="action meme" data-open="meme" title="Meme" aria-label="Meme"><img src="assets/button-icons/meme.png" alt=""></button>
+      <button class="action care" data-open="care" title="Cariño" aria-label="Cariño"><img src="assets/button-icons/carino.png" alt=""></button>
+      <button class="action play" data-open="play" title="Jugar" aria-label="Jugar"><img src="assets/button-icons/jugar.png" alt=""></button>
+    </div>
+  </section>
+
+  <nav class="bottom-nav" aria-label="Navegación principal">
+    <button class="active" data-open="home" title="Inicio" aria-label="Inicio"><img src="assets/button-icons/inicio.png" alt=""></button>
+    <button data-open="chat" title="Actividad" aria-label="Actividad"><img src="assets/button-icons/chat.png" alt=""></button>
+    <button data-open="gallery" title="Galería" aria-label="Galería"><img src="assets/button-icons/galeria.png" alt=""></button>
+    <button data-open="shop" title="Tienda" aria-label="Tienda"><span class="nav-emoji" style="display:inline">🛍️</span></button>
+    <button data-open="achievements" title="Logros" aria-label="Logros"><img src="assets/button-icons/logros.png" alt=""></button>
+    <button data-open="friends" title="Conectados" aria-label="Conectados"><img src="assets/button-icons/amigos.png" alt=""></button>
+  </nav>
+
+  <div id="modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h2 id="modalTitle">Menú</h2>
+        <button id="closeModal" class="close" type="button">×</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <input id="photoInput" type="file" accept="image/*" hidden>
+  <div id="toast" class="toast" aria-live="polite"></div>
+</main></div></div>
+<script src="script-v1-yafi.js?v=30"></script>
+</body>
+</html>
