@@ -171,7 +171,7 @@ const chicoScenes=[
   {file:'chico_durmiendo.png',left:78,bottom:18,scale:.50,duration:10500,move:false,sound:'snore'},
   {file:'chico_tumbado_triste.png',left:76,bottom:18,scale:.50,duration:9000,move:false,sound:'cry'},
   {file:'chico_de_pie_triste.png',left:9,bottom:18,scale:.54,duration:6800,move:false,sound:'cry'},
-  {file:'chico_guiñando_ojo.png',left:84,bottom:18,scale:.52,duration:6200,move:false,sound:'laugh'},
+  {file:'chico_guinando_ojo.png',left:84,bottom:18,scale:.52,duration:6200,move:false,sound:'laugh'},
   {file:'chico_salto.png',left:20,bottom:18,scale:.52,duration:5200,move:true,sound:'jump'},
   {file:'chico_apunto_de_saltar.png',left:79,bottom:18,scale:.52,duration:5200,move:true,sound:'jump'}
 ];
@@ -218,7 +218,7 @@ function rastaChatter(){
     wrap.classList.remove('chico-touched'); void wrap.offsetWidth; wrap.classList.add('chico-touched');
   }
   if(img){
-    const reactions=['chico_canta.png','chico_musica.png','chico_de_pie_victoria.png','chico_guiñando_ojo.png','chico_sentado_feliz.png','chico_tumbado_haciendose_el_guapo.png','chico_salto.png'];
+    const reactions=['chico_canta.png','chico_musica.png','chico_de_pie_victoria.png','chico_guinando_ojo.png','chico_sentado_feliz.png','chico_tumbado_haciendose_el_guapo.png','chico_salto.png'];
     img.src='assets/chico/'+reactions[Math.floor(Math.random()*reactions.length)];
     img.classList.remove('chico-wiggle'); void img.offsetWidth; img.classList.add('chico-wiggle');
   }
@@ -343,7 +343,7 @@ function tapChico(){
     wrap.style.zIndex='26';
   }
   if(img){
-    const reactions=['chico_de_pie_victoria.png','chico_canta.png','chico_guiñando_ojo.png','chico_salto.png','chico_musica.png','chico_tumbado_haciendose_el_guapo.png'];
+    const reactions=['chico_de_pie_victoria.png','chico_canta.png','chico_guinando_ojo.png','chico_salto.png','chico_musica.png','chico_tumbado_haciendose_el_guapo.png'];
     img.src='assets/chico/'+reactions[Math.floor(Math.random()*reactions.length)];
     img.classList.remove('chico-wiggle'); void img.offsetWidth; img.classList.add('chico-wiggle');
     img.style.transform='scale(var(--chico-scale,.54))';
