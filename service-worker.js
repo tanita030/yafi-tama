@@ -1,4 +1,4 @@
-const CACHE_NAME='yafi-v2-10-final-interactions';
+const CACHE_NAME='yafi-v3-2-economy-animations';
 const CORE=['./','./index.html','./style.css','./script-v1-yafi.js','./manifest.webmanifest'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()).catch(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});

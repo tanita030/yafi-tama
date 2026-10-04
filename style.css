@@ -1195,3 +1195,10 @@ html.mobile-console-mode, html.mobile-console-mode body{overflow-x:hidden;}
 .sprite-wrap #iahn{pointer-events:none!important;}
 .toy-items{pointer-events:none!important;}
 .toy-room-item{pointer-events:auto!important;touch-action:manipulation!important;}
+
+/* V3.2 — juguetes en el césped, detrás de Yafi y Rasta */
+.toy-items{z-index:24!important;pointer-events:none!important;overflow:visible!important;}
+.toy-room-item{z-index:24!important;pointer-events:auto!important;position:absolute!important;transform-origin:center bottom!important;}
+.sprite-wrap{z-index:35!important;}
+.chico-companion{z-index:26!important;}
+.room-items{z-index:1!important;}

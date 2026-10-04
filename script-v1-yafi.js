@@ -20,7 +20,7 @@ const state={
   hunger:savedGame?.hunger ?? 62,
   energy:savedGame?.energy ?? 85,
   health:savedGame?.health ?? 90,
-  points:savedGame?.points ?? 50,
+  points:savedGame?.points ?? 80,
   lastTick:savedGame?.lastTick ?? Date.now(),
   photos:JSON.parse(localStorage.getItem('yafiPhotos')||'[]'),
   feed:JSON.parse(localStorage.getItem('yafiFeed')||'[]'),
@@ -34,6 +34,12 @@ if(localStorage.getItem('yafiChicoPurchased') === '1' && !state.roomItems.includ
   state.roomItems.push('chico');
 }
 state.localActivity=localActivity;
+// V3.2 — rebalance: existing saves get a one-time +50⭐ cushion when the new prices land.
+if(localStorage.getItem('yafiEconomyV2')!=='1'){
+  if(savedGame) state.points += 50;
+  localStorage.setItem('yafiEconomyV2','1');
+}
+
 
 // ==========================================================
 // YAFI — ARRANQUE ROBUSTO
@@ -147,26 +153,27 @@ let chicoSceneTimer=null;
 let chicoSpeechTimer=null;
 let chicoWalkDirection=1;
 const chicoScenes=[
-  {file:'chico_de_pie_normal.png',left:5,bottom:18,scale:.56,duration:6500,move:false},
-  {file:'chico_camina.png',left:12,bottom:18,scale:.54,duration:6500,move:true},
-  {file:'chico_mirando_movil.png',left:21,bottom:18,scale:.52,duration:7500,move:false},
-  {file:'chico_sentado_feliz.png',left:8,bottom:18,scale:.55,duration:7000,move:false},
-  {file:'chico_canta.png',left:80,bottom:18,scale:.52,duration:6500,move:false},
-  {file:'chico_tumbado_amor.png',left:72,bottom:18,scale:.50,duration:10500,move:false},
-  {file:'chico_sentado_ordenador.png',left:83,bottom:18,scale:.52,duration:9000,move:false},
-  {file:'chico_de_pie_victoria.png',left:15,bottom:18,scale:.54,duration:6500,move:false},
-  {file:'chico_corre.png',left:74,bottom:18,scale:.52,duration:5500,move:true},
-  {file:'chico_sprinta.png',left:10,bottom:18,scale:.50,duration:5000,move:true},
-  {file:'chico_sentado_cafe.png',left:82,bottom:18,scale:.52,duration:8000,move:false},
-  {file:'chico_sentado_mirando_movil.png',left:6,bottom:18,scale:.52,duration:8500,move:false},
-  {file:'chico_musica.png',left:77,bottom:18,scale:.52,duration:8000,move:false},
-  {file:'chico_tumbado_haciendose_el_guapo.png',left:68,bottom:18,scale:.50,duration:10500,move:false},
-  {file:'chico_tumbado_durmiendo.png',left:18,bottom:18,scale:.50,duration:12000,move:false},
-  {file:'chico_tumbado_triste.png',left:76,bottom:18,scale:.50,duration:9500,move:false},
-  {file:'chico_de_pie_triste.png',left:9,bottom:18,scale:.54,duration:7000,move:false},
-  {file:'chico_guiñando_ojo.png',left:84,bottom:18,scale:.52,duration:6500,move:false},
-  {file:'chico_salto.png',left:20,bottom:18,scale:.52,duration:5500,move:true},
-  {file:'chico_apunto_de_saltar.png',left:79,bottom:18,scale:.52,duration:5500,move:true}
+  {file:'chico_de_pie_normal.png',left:5,bottom:18,scale:.56,duration:6200,move:false,sound:'bark'},
+  {file:'chico_camina.png',left:12,bottom:18,scale:.54,duration:6200,move:true,sound:'pant'},
+  {file:'chico_mirando_movil.png',left:21,bottom:18,scale:.52,duration:7200,move:false,sound:'click'},
+  {file:'chico_sentado_feliz.png',left:8,bottom:18,scale:.55,duration:6800,move:false,sound:'happyBark'},
+  {file:'chico_canta.png',left:80,bottom:18,scale:.52,duration:6200,move:false,sound:'laugh'},
+  {file:'chico_tumbado_amor.png',left:72,bottom:18,scale:.50,duration:9800,move:false,sound:'happyBark'},
+  {file:'chico_sentado_ordenador.png',left:83,bottom:18,scale:.52,duration:8500,move:false,sound:'click'},
+  {file:'chico_de_pie_victoria.png',left:15,bottom:18,scale:.54,duration:6200,move:false,sound:'yay'},
+  {file:'chico_corre.png',left:74,bottom:18,scale:.52,duration:5200,move:true,sound:'pant'},
+  {file:'chico_sprinta.png',left:10,bottom:18,scale:.50,duration:4800,move:true,sound:'pant'},
+  {file:'chico_sentado_cafe.png',left:82,bottom:18,scale:.52,duration:7600,move:false,sound:'laugh'},
+  {file:'chico_sentado_mirando_movil.png',left:6,bottom:18,scale:.52,duration:8200,move:false,sound:'click'},
+  {file:'chico_musica.png',left:77,bottom:18,scale:.52,duration:7800,move:false,sound:'happyBark'},
+  {file:'chico_tumbado_haciendose_el_guapo.png',left:68,bottom:18,scale:.50,duration:9800,move:false,sound:'laugh'},
+  {file:'chico_tumbado_durmiendo.png',left:18,bottom:18,scale:.50,duration:10500,move:false,sound:'snore'},
+  {file:'chico_durmiendo.png',left:78,bottom:18,scale:.50,duration:10500,move:false,sound:'snore'},
+  {file:'chico_tumbado_triste.png',left:76,bottom:18,scale:.50,duration:9000,move:false,sound:'cry'},
+  {file:'chico_de_pie_triste.png',left:9,bottom:18,scale:.54,duration:6800,move:false,sound:'cry'},
+  {file:'chico_guiñando_ojo.png',left:84,bottom:18,scale:.52,duration:6200,move:false,sound:'laugh'},
+  {file:'chico_salto.png',left:20,bottom:18,scale:.52,duration:5200,move:true,sound:'jump'},
+  {file:'chico_apunto_de_saltar.png',left:79,bottom:18,scale:.52,duration:5200,move:true,sound:'jump'}
 ];
 function ensureRastaVisible(){
   const wrap=$('#chicoCompanion');
@@ -194,6 +201,7 @@ function showChicoFrame(){
   wrap.style.setProperty('--chico-scale',scene.scale);
   img.style.transformOrigin='bottom center';
   img.style.transform=(scene.move && chicoWalkDirection<0)?'scaleX(-1) scale(var(--chico-scale,1))':'scale(var(--chico-scale,1))';
+  if(scene.sound)playSfx(scene.sound);
   chicoIndex=(chicoIndex+1)%chicoScenes.length;
   clearTimeout(chicoSceneTimer);
   chicoSceneTimer=setTimeout(showChicoFrame,scene.duration);
@@ -315,7 +323,7 @@ let chicoTapTimer=null;
 function petChico(){
   if(!hasRoomItem('chico')){toast('Primero tienes que comprar a Rasta 🧍');return;}
   const wrap=$('#chicoCompanion'); if(!wrap)return; if(chicoPetTimer)clearTimeout(chicoPetTimer); wrap.classList.add('hidden-chico');
-  setFace('love','¡Rasta! 🐶❤️','anim-pop',['❤️','🐾']); change({mood:10}); state.points+=2; render(); toast('El perro está jugando con Rasta 🐶'); logActivity('action','ha jugado con Rasta','🧍');
+  setFace('love','¡Rasta! 🐶❤️','anim-pop',['❤️','🐾']); change({mood:10}); state.points+=2; incCounter('yafi_chico_pets'); render(); toast('El perro está jugando con Rasta 🐶'); logActivity('action','ha jugado con Rasta','🧍');
   chicoPetTimer=setTimeout(()=>{wrap.classList.remove('hidden-chico');showChicoFrame();say('Rasta ha vuelto 😎');chicoPetTimer=null;},3500);
 }
 // Chico: reacciona cuando lo tocas. Las frases son independientes de Yafi.
@@ -362,7 +370,7 @@ attachChicoTap();
 // Cada usuario posee sus compras; las estadísticas de Yafi
 // siguen siendo independientes de la decoración.
 // ==========================================================
-const TOY_ITEMS=[{id:'toy01',name:'Juguete 01',emoji:'🎾',cost:25,file:'juguete_perro_01.png'},{id:'toy02',name:'Juguete 02',emoji:'🎾',cost:35,file:'juguete_perro_02.png'},{id:'toy03',name:'Juguete 03',emoji:'🎾',cost:45,file:'juguete_perro_03.png'},{id:'toy04',name:'Juguete 04',emoji:'🎾',cost:55,file:'juguete_perro_04.png'},{id:'toy05',name:'Juguete 05',emoji:'🎾',cost:65,file:'juguete_perro_05.png'},{id:'toy06',name:'Juguete 06',emoji:'🎾',cost:75,file:'juguete_perro_06.png'},{id:'toy07',name:'Juguete 07',emoji:'🎾',cost:85,file:'juguete_perro_07.png'},{id:'toy08',name:'Juguete 08',emoji:'🎾',cost:95,file:'juguete_perro_08.png'},{id:'toy09',name:'Juguete 09',emoji:'🎾',cost:25,file:'juguete_perro_09.png'},{id:'toy10',name:'Juguete 10',emoji:'🎾',cost:35,file:'juguete_perro_10.png'},{id:'toy11',name:'Juguete 11',emoji:'🎾',cost:45,file:'juguete_perro_11.png'},{id:'toy12',name:'Juguete 12',emoji:'🎾',cost:55,file:'juguete_perro_12.png'},{id:'toy13',name:'Juguete 13',emoji:'🎾',cost:65,file:'juguete_perro_13.png'},{id:'toy14',name:'Juguete 14',emoji:'🎾',cost:75,file:'juguete_perro_14.png'},{id:'toy15',name:'Juguete 15',emoji:'🎾',cost:85,file:'juguete_perro_15.png'},{id:'toy16',name:'Juguete 16',emoji:'🎾',cost:95,file:'juguete_perro_16.png'},{id:'toy17',name:'Juguete 17',emoji:'🎾',cost:25,file:'juguete_perro_17.png'},{id:'toy18',name:'Juguete 18',emoji:'🎾',cost:35,file:'juguete_perro_18.png'},{id:'toy19',name:'Juguete 19',emoji:'🎾',cost:45,file:'juguete_perro_19.png'},{id:'toy20',name:'Juguete 20',emoji:'🎾',cost:55,file:'juguete_perro_20.png'},{id:'toy21',name:'Juguete 21',emoji:'🎾',cost:65,file:'juguete_perro_21.png'},{id:'toy22',name:'Juguete 22',emoji:'🎾',cost:75,file:'juguete_perro_22.png'},{id:'toy23',name:'Juguete 23',emoji:'🎾',cost:85,file:'juguete_perro_23.png'},{id:'toy24',name:'Juguete 24',emoji:'🎾',cost:95,file:'juguete_perro_24.png'},{id:'toy25',name:'Juguete 25',emoji:'🎾',cost:25,file:'juguete_perro_25.png'},{id:'toy26',name:'Juguete 26',emoji:'🎾',cost:35,file:'juguete_perro_26.png'},{id:'toy28',name:'Juguete 28',emoji:'🎾',cost:45,file:'juguete_perro_28.png'},{id:'toy29',name:'Juguete 29',emoji:'🎾',cost:55,file:'juguete_perro_29.png'},{id:'toy30',name:'Juguete 30',emoji:'🎾',cost:65,file:'juguete_perro_30.png'},{id:'toy31',name:'Juguete 31',emoji:'🎾',cost:75,file:'juguete_perro_31.png'},{id:'toy32',name:'Juguete 32',emoji:'🎾',cost:85,file:'juguete_perro_32.png'},{id:'toy33',name:'Juguete 33',emoji:'🎾',cost:95,file:'juguete_perro_33.png'},{id:'toy34',name:'Juguete 34',emoji:'🎾',cost:25,file:'juguete_perro_34.png'},{id:'toy35',name:'Juguete 35',emoji:'🎾',cost:35,file:'juguete_perro_35.png'},{id:'toy36',name:'Juguete 36',emoji:'🎾',cost:45,file:'juguete_perro_36.png'},{id:'toy37',name:'Juguete 37',emoji:'🎾',cost:55,file:'juguete_perro_37.png'},{id:'toy38',name:'Juguete 38',emoji:'🎾',cost:65,file:'juguete_perro_38.png'},{id:'toy39',name:'Juguete 39',emoji:'🎾',cost:75,file:'juguete_perro_39.png'},{id:'toy40',name:'Juguete 40',emoji:'🎾',cost:85,file:'juguete_perro_40.png'}];
+const TOY_ITEMS=[{id:'toy01',name:'Hueso clásico',emoji:'🦴',cost:45,file:'juguete_perro_01.png'},{id:'toy02',name:'Hueso marrón',emoji:'🦴',cost:52,file:'juguete_perro_02.png'},{id:'toy03',name:'Mordedor rojo',emoji:'🧸',cost:60,file:'juguete_perro_03.png'},{id:'toy04',name:'Pelota de tenis',emoji:'🎾',cost:70,file:'juguete_perro_04.png'},{id:'toy05',name:'Pelota azul',emoji:'🔵',cost:80,file:'juguete_perro_05.png'},{id:'toy06',name:'Balón de fútbol',emoji:'⚽',cost:91,file:'juguete_perro_06.png'},{id:'toy07',name:'Balón de basket',emoji:'🏀',cost:103,file:'juguete_perro_07.png'},{id:'toy08',name:'Balón americano',emoji:'🏈',cost:115,file:'juguete_perro_08.png'},{id:'toy09',name:'Cuerda caramelito',emoji:'🪢',cost:127,file:'juguete_perro_09.png'},{id:'toy10',name:'Cuerda arcoíris',emoji:'🪢',cost:140,file:'juguete_perro_10.png'},{id:'toy11',name:'Pato chill',emoji:'🦆',cost:153,file:'juguete_perro_11.png'},{id:'toy12',name:'Cerdito rosa',emoji:'🐷',cost:167,file:'juguete_perro_12.png'},{id:'toy13',name:'Osito',emoji:'🧸',cost:181,file:'juguete_perro_13.png'},{id:'toy14',name:'Ovejita',emoji:'🐑',cost:195,file:'juguete_perro_14.png'},{id:'toy15',name:'Tiburón',emoji:'🦈',cost:210,file:'juguete_perro_15.png'},{id:'toy16',name:'Pulpo',emoji:'🐙',cost:225,file:'juguete_perro_16.png'},{id:'toy17',name:'Gallina',emoji:'🐔',cost:240,file:'juguete_perro_17.png'},{id:'toy18',name:'Ardilla',emoji:'🐿️',cost:255,file:'juguete_perro_18.png'},{id:'toy19',name:'Zorrito',emoji:'🦊',cost:271,file:'juguete_perro_19.png'},{id:'toy20',name:'Mapache',emoji:'🦝',cost:287,file:'juguete_perro_20.png'},{id:'toy21',name:'Erizo',emoji:'🦔',cost:304,file:'juguete_perro_21.png'},{id:'toy22',name:'Pingüino',emoji:'🐧',cost:321,file:'juguete_perro_22.png'},{id:'toy23',name:'Ranita',emoji:'🐸',cost:338,file:'juguete_perro_23.png'},{id:'toy24',name:'Estrella de mar',emoji:'⭐',cost:355,file:'juguete_perro_24.png'},{id:'toy25',name:'Frisbee azul',emoji:'🔵',cost:372,file:'juguete_perro_25.png'},{id:'toy26',name:'Frisbee rojo',emoji:'🔴',cost:389,file:'juguete_perro_26.png'},{id:'toy28',name:'Rueda',emoji:'⚫',cost:407,file:'juguete_perro_28.png'},{id:'toy29',name:'Nudo arcoíris',emoji:'🪢',cost:424,file:'juguete_perro_29.png'},{id:'toy30',name:'Hueso azul',emoji:'🦴',cost:441,file:'juguete_perro_30.png'},{id:'toy31',name:'Hueso rojo',emoji:'🦴',cost:458,file:'juguete_perro_31.png'},{id:'toy32',name:'Mancuerna morada',emoji:'🏋️',cost:475,file:'juguete_perro_32.png'},{id:'toy33',name:'Cuerda enrollada',emoji:'🪢',cost:492,file:'juguete_perro_33.png'},{id:'toy34',name:'Ovillo azul',emoji:'🧶',cost:509,file:'juguete_perro_34.png'},{id:'toy35',name:'Ovillo rosa',emoji:'🧶',cost:526,file:'juguete_perro_35.png'},{id:'toy36',name:'Zanahoria',emoji:'🥕',cost:543,file:'juguete_perro_36.png'},{id:'toy37',name:'Plátano',emoji:'🍌',cost:560,file:'juguete_perro_37.png'},{id:'toy38',name:'Sandía',emoji:'🍉',cost:578,file:'juguete_perro_38.png'},{id:'toy39',name:'Filete de juguete',emoji:'🥩',cost:596,file:'juguete_perro_39.png'},{id:'toy40',name:'Donut',emoji:'🍩',cost:614,file:'juguete_perro_40.png'}];
 const ROOM_ITEMS={
   bed:{name:'Cama',emoji:'🛏️',cost:150,file:'01_cama.png',x:-1,y:394,w:585,h:366,z:10},
   window:{name:'Ventana',emoji:'🪟',cost:120,file:'02_ventana.png',x:915,y:0,w:450,h:492,z:8},
@@ -413,48 +421,49 @@ function buyToy(id){
   const toy=TOY_ITEMS.find(t=>t.id===id); if(!toy)return false;
   if(hasToy(id)){toast('Ya tienes este juguete 🎾');return false;}
   if(!spend(toy.cost))return false;
-  state.toys.push(id); localStorage.setItem('yafiToys',JSON.stringify(state.toys)); renderToys(); playSfx('yay');
-  setFace('playful',`¡${toy.name}! 🎾`,'anim-happy',['🎾','🐾']); toast(`${toy.name} comprado ⭐`); logActivity('action',`ha comprado ${toy.name}`,'🎾'); return true;
+  state.toys.push(id); localStorage.setItem('yafiToys',JSON.stringify(state.toys)); persistGame(); renderToys(); playSfx('yay');
+  const purchasedLines={
+    toy01:'OOOZIII, eze huezo clásico me guzta muchísimo. 🦴❤️',toy02:'OOOZIII, eze huezo tiene pintaza. 😍🦴',toy03:'OOOZIII, ¡mordedóóór nuevo! Me lo quedo. 🤩',
+    toy04:'OOOZIII, ¡UNA PELOTA DE TENIZ! Eza ez mía. 🎾🐶',toy05:'OOOZIII, eza bolita azul me guzta. 💙🎾',toy06:'OOOZIII, ¡balón! Ahora zí que corro. ⚽💨',
+    toy07:'OOOZIII, ¡balón de basket! Voy a hacer un mate. 🏀😎',toy08:'OOOZIII, eze balón tiene pinta de mordisco. 🏈🐾',toy09:'OOOZIII, ¡una cuerda de caramelo! Tira tú primero. 🪢😈',
+    toy10:'OOOZIII, ¡eza cuerda ez preciosa! La voy a destrozar. 🌈🐶',toy11:'OOOZIII, ¡UN PATO! Quiero hacerlo chillar. 🦆😂',toy12:'OOOZIII, eze cerdito ez demasiado mono. 🐷❤️',
+    toy13:'OOOZIII, ¡un osito! Ahora tengo compañero. 🧸🥹',toy14:'OOOZIII, una ovejita. BEEE... digo, guau. 🐑😂',toy15:'OOOZIII, ¡UN TIBURÓN! Soy el rey del océano. 🦈🌊',
+    toy16:'OOOZIII, eze pulpo tiene demasiados brazos. Me cae bien. 🐙😎',toy17:'OOOZIII, ¡una gallina! Esto promete. 🐔🐾',toy18:'OOOZIII, eza ardilla no ze me ezcapa. 🐿️👀',
+    toy19:'OOOZIII, ¡un zorrito! Qué guapo ez. 🦊❤️',toy20:'OOOZIII, un mapache. Tiene cara de cómplice. 🦝😏',toy21:'OOOZIII, ¡un erizo! Suave no parece, pero me arriesgo. 🦔😂',
+    toy22:'OOOZIII, ¡pingüino! ¿También quierez jugar? 🐧❤️',toy23:'OOOZIII, eza rana va directa al parque. 🐸🐾',toy24:'OOOZIII, ¡una estrella! Ahora el césped tiene glamour. ⭐😎',
+    toy25:'OOOZIII, ¡frisbee azul! Preparada para lanzarlo. 🐶💨',toy26:'OOOZIII, frisbee rojo. No lo voy a perder... probablemente. 😂',toy28:'OOOZIII, ¡una rueda! Esto va a rodar MUCHO. ⚫💨',
+    toy29:'OOOZIII, ¡nudo arcoíris! Ezo parece imposible de soltar. 🌈🪢',toy30:'OOOZIII, hueso azul. Muy fino, muy elegante. 🦴💙',toy31:'OOOZIII, hueso rojo. Este tiene actitud. 🦴❤️',
+    toy32:'OOOZIII, ¿una mancuerna? También hago gimnasio. 💪🐶',toy33:'OOOZIII, eza cuerda tiene nivel profesional. 🪢😎',toy34:'OOOZIII, ¡ovillo azul! A ver quién gana, él o yo. 🧶🐾',
+    toy35:'OOOZIII, ¡ovillo rosa! Demasiado bonito para romperlo... bueno. 🩷😂',toy36:'OOOZIII, una zanahoria de juguete. ¡Eza zí me la como con los ojos! 🥕🐶',
+    toy37:'OOOZIII, ¡PLÁTANO! No ez comida, pero me lo llevo. 🍌😂',toy38:'OOOZIII, ¡SANDÍA! Esto parece una fiesta. 🍉🎉',toy39:'OOOZIII, eze filete de juguete casi me engaña. 🥩👀',
+    toy40:'OOOZIII, ¡UN DONUT! Eze sí que me guzta. 🍩❤️'
+  };
+  const line=purchasedLines[toy.id]||`OOOZIII, eze ${toy.name.toLowerCase()} me guzta muchísimo. 🐶❤️`;
+  personalityVisual('superWow',line,'anim-happy',['⭐','❤️','🐾']); playSfx('happyBark'); toast(`${toy.name} comprado ⭐`); logActivity('action',`ha comprado ${toy.name}`,'🎾'); return true;
 }
 function renderToys(){
   const layer=$('#toyItems'); if(!layer)return; layer.innerHTML='';
-  // Los juguetes viven en el suelo y se acumulan SOLO en los laterales/esquinas.
-  // Nunca ocupan el centro donde está Yafi.
   const spots=[
-    [3,4,-8],[13,4,6],[23,5,-5],[3,14,7],[14,15,-4],[24,16,8],
-    [76,5,7],[87,4,-6],[96,5,8],[76,15,-5],[87,16,6],[96,17,-8],
-    [6,25,5],[17,26,-7],[83,26,7],[94,27,-5],
-    [2,34,-6],[14,35,5],[86,35,-7],[98,34,6],
-    [4,43,7],[16,44,-5],[84,44,5],[96,43,-7]
+    [4,6,-10],[13,8,7],[22,6,-5],[31,10,9],[4,18,5],[16,20,-8],[28,17,6],
+    [73,8,-7],[84,6,10],[94,9,-6],[70,18,6],[82,20,-9],[94,17,7],
+    [6,29,-7],[18,31,8],[29,27,-5],[71,30,6],[83,32,-8],[95,28,5],
+    [4,39,8],[15,41,-6],[27,37,9],[73,40,-7],[86,42,6],[97,38,-9],
+    [8,47,-5],[21,49,7],[79,48,8],[92,46,-6]
   ];
   state.toys.forEach((id,idx)=>{
     const toy=TOY_ITEMS.find(t=>t.id===id); if(!toy)return;
-    const el=document.createElement('img'); el.className='toy-room-item';
-    el.src='assets/juguetes/'+toy.file; el.alt=toy.name; el.title=toy.name;
-    const sp=spots[idx%spots.length];
-    const cycle=Math.floor(idx/spots.length);
-    el.style.left=`${sp[0]}%`;
-    el.style.bottom=`${sp[1]+Math.min(cycle*3,9)}%`;
-    el.style.transform=`rotate(${sp[2]}deg) scale(${cycle?0.9:1})`;
-    el.style.zIndex='24';
-    el.style.pointerEvents='auto';
-    el.style.cursor='pointer';
-    el.dataset.toyId=toy.id;
+    const el=document.createElement('img'); el.className='toy-room-item'; el.src='assets/juguetes/'+toy.file; el.alt=toy.name; el.title=toy.name; el.dataset.toyId=toy.id;
+    const sp=spots[idx%spots.length],cycle=Math.floor(idx/spots.length),jitter=((idx*17)%7)-3;
+    el.style.left=`${sp[0]+jitter*.22}%`; el.style.bottom=`${sp[1]+Math.min(cycle*2.2,8)}%`; el.style.transform=`rotate(${sp[2]}deg) scale(${cycle?0.88:1})`;
+    el.style.zIndex='24'; el.style.pointerEvents='auto'; el.style.cursor='pointer';
     el.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();tapToy(toy.id);},{capture:true});
     layer.appendChild(el);
   });
 }
 function tapToy(id){
   const toy=TOY_ITEMS.find(t=>t.id===id); if(!toy)return;
-  const reactions=[
-    ['playful',`¡Mira mi ${toy.name}! 🎾 ¡Quiero jugááár!`,'anim-bounce',['🎾','🐾'],'happyBark'],
-    ['wow',`${toy.name}... ezo zí que me guzta. 🤩🐶`,'anim-happy',['✨','❤️'],'happyBark'],
-    ['askingLove',`¿Jugamoz con mi ${toy.name}? 🥺🐾`,'anim-pop',['💕','🎾'],'pant'],
-    ['laugh',`JAJAJA, ${toy.name}. ¡Qué locura! 😂`,'anim-happy',['😂','🎾'],'laugh'],
-    ['confused',`¿Y ezo cómo ze usa? 🤔`,'anim-shake',['❓','🎾'],'bark']
-  ];
-  const r=reactions[Math.floor(Math.random()*reactions.length)];
-  personalityVisual(r[0],r[1],r[2],r[3]); playSfx(r[4]); change({mood:2,energy:1});
+  reactToToy(toy);
+  change({mood:3,energy:1});
 }
 function shopMenu(){
   const rastaOwned=hasRoomItem('chico') || localStorage.getItem('yafiChicoPurchased')==='1';
@@ -623,7 +632,8 @@ function miniGame(type){
   function finish(win){
     if(!running)return;
     cleanup();
-    state.points+=score;
+    if(score>0)gain(score);
+    if(win)incCounter('yafi_games_won');
     change({mood:win?8:2});
     playSfx(win?'yay':'gameover');
     setFace(win?'celebrate':'tired',win?'¡PARTIDAZA! ⭐':'Casi... 😅','anim-happy',win?['⭐','🎮']:['💦']);
@@ -961,11 +971,11 @@ const GAME_COSTS={
   hug:3, call:5, visit:8, movie:6, music:4, cat:2, joke:1
 };
 const FOOD_DATA=[
-  ['01_pizza.png','Pizza',15,25,0,2],['02_hamburguesa.png','Hamburguesa',12,22,-2,0],['03_hotdog.png','Hot dog',9,17,-1,0],['04_sandwich.png','Sándwich',8,15,1,1],['05_patatas_fritas.png','Patatas fritas',7,14,-2,0],['06_muslo_de_pollo.png','Pollo',10,20,2,2],['07_filete.png','Filete',13,24,2,3],['08_salmon.png','Salmón',14,22,3,4],['09_sushi.png','Sushi',14,21,3,3],['10_sushi_roll.png','Sushi roll',11,18,2,2],['11_nigiri.png','Nigiri',10,17,2,2],['12_onigiri.png','Onigiri',8,16,2,2],['13_ramen.png','Ramen',13,24,1,2],['14_fideos.png','Fideos',10,20,1,1],['15_pollo_teriyaki.png','Pollo teriyaki',13,24,3,3],['16_curry_con_arroz.png','Curry con arroz',14,25,1,3],['17_tonkatsu.png','Tonkatsu',14,24,-1,2],['18_ramen_miso.png','Ramen miso',13,23,2,3],
-  ['19_galleta.png','Galleta',5,9,-1,0],['20_chocolate.png','Chocolate',6,11,-1,0],['21_donut.png','Donut',7,13,-2,0],['22_tarta_fresa.png','Tarta de fresa',9,16,-1,0],['23_tarta_chocolate.png','Tarta de chocolate',9,17,-2,0],['24_flan.png','Flan',6,12,0,0],['25_tortitas.png','Tortitas',8,15,0,1],['26_gofre.png','Gofre',8,15,-1,0],['27_helado.png','Helado',7,12,1,0],['28_cupcake.png','Cupcake',7,12,-1,0],['29_caramelo.png','Caramelo',4,8,-2,0],['30_galleta_chocolate.png','Galleta de chocolate',6,10,-1,0],['31_macarons.png','Macarons',8,13,-1,0],['32_muffin.png','Muffin',7,13,0,0],['33_taiyaki.png','Taiyaki',8,14,0,1],['34_dango.png','Dango',7,13,1,0],
-  ['35_sandia.png','Sandía',5,12,3,2],['36_fresa.png','Fresas',4,10,3,2],['37_platano.png','Plátano',4,11,4,2],['38_manzana.png','Manzana',4,10,4,2],['39_melocoton.png','Melocotón',5,11,3,2],
-  ['40_bubble_tea.png','Bubble tea',7,13,1,0],['41_leche_fresa.png','Leche de fresa',6,12,2,1],['42_cafe.png','Café',6,7,5,0],['43_bebida_skull.png','Bebida skull',7,10,4,0],['44_te_verde.png','Té verde',5,8,4,2],['45_refresco_fresa.png','Refresco de fresa',6,11,-1,0],['46_agua.png','Agua',3,5,5,3],['47_zumo_naranja.png','Zumo de naranja',5,11,4,2],['48_zumo_uva.png','Zumo de uva',5,10,3,1],['49_refresco_rojo.png','Refresco rojo',5,10,-1,0],['50_refresco_skull.png','Refresco skull',6,10,0,0],['51_bebida_energetica.png','Bebida energética',8,9,12,0],
-  ['52_comida_Chico_azul.png','Comida de Rasta azul',5,8,-3,0],['53_comida_Chico_rosa.png','Comida de Rasta rosa',5,8,-3,0],['54_carne.png','Carne',8,17,2,2],['55_pescado.png','Pescado',8,16,3,3],['56_pechuga_pollo.png','Pechuga de pollo',8,17,4,3],['57_zanahoria.png','Zanahoria',4,10,4,3],['58_brocoli.png','Brócoli',4,10,4,4],['59_bacon.png','Bacon',7,14,-2,0],['60_verdura_de_hoja.png','Verdura de hoja',4,9,4,4],['61_tomate.png','Tomate',4,9,4,3]
+  ['01_pizza.png','Pizza',22,25,0,2],['02_hamburguesa.png','Hamburguesa',17,22,-2,0],['03_hotdog.png','Hot dog',13,17,-1,0],['04_sandwich.png','Sándwich',12,15,1,1],['05_patatas_fritas.png','Patatas fritas',10,14,-2,0],['06_muslo_de_pollo.png','Pollo',14,20,2,2],['07_filete.png','Filete',19,24,2,3],['08_salmon.png','Salmón',20,22,3,4],['09_sushi.png','Sushi',20,21,3,3],['10_sushi_roll.png','Sushi roll',16,18,2,2],['11_nigiri.png','Nigiri',14,17,2,2],['12_onigiri.png','Onigiri',12,16,2,2],['13_ramen.png','Ramen',19,24,1,2],['14_fideos.png','Fideos',14,20,1,1],['15_pollo_teriyaki.png','Pollo teriyaki',19,24,3,3],['16_curry_con_arroz.png','Curry con arroz',20,25,1,3],['17_tonkatsu.png','Tonkatsu',20,24,-1,2],['18_ramen_miso.png','Ramen miso',19,23,2,3],
+  ['19_galleta.png','Galleta',7,9,-1,0],['20_chocolate.png','Chocolate',9,11,-1,0],['21_donut.png','Donut',10,13,-2,0],['22_tarta_fresa.png','Tarta de fresa',13,16,-1,0],['23_tarta_chocolate.png','Tarta de chocolate',13,17,-2,0],['24_flan.png','Flan',9,12,0,0],['25_tortitas.png','Tortitas',12,15,0,1],['26_gofre.png','Gofre',12,15,-1,0],['27_helado.png','Helado',10,12,1,0],['28_cupcake.png','Cupcake',10,12,-1,0],['29_caramelo.png','Caramelo',6,8,-2,0],['30_galleta_chocolate.png','Galleta de chocolate',9,10,-1,0],['31_macarons.png','Macarons',12,13,-1,0],['32_muffin.png','Muffin',10,13,0,0],['33_taiyaki.png','Taiyaki',12,14,0,1],['34_dango.png','Dango',10,13,1,0],
+  ['35_sandia.png','Sandía',7,12,3,2],['36_fresa.png','Fresas',6,10,3,2],['37_platano.png','Plátano',6,11,4,2],['38_manzana.png','Manzana',6,10,4,2],['39_melocoton.png','Melocotón',7,11,3,2],
+  ['40_bubble_tea.png','Bubble tea',10,13,1,0],['41_leche_fresa.png','Leche de fresa',9,12,2,1],['42_cafe.png','Café',9,7,5,0],['43_bebida_skull.png','Bebida skull',10,10,4,0],['44_te_verde.png','Té verde',7,8,4,2],['45_refresco_fresa.png','Refresco de fresa',9,11,-1,0],['46_agua.png','Agua',5,5,5,3],['47_zumo_naranja.png','Zumo de naranja',7,11,4,2],['48_zumo_uva.png','Zumo de uva',7,10,3,1],['49_refresco_rojo.png','Refresco rojo',7,10,-1,0],['50_refresco_skull.png','Refresco skull',9,10,0,0],['51_bebida_energetica.png','Bebida energética',12,9,12,0],
+  ['52_comida_Chico_azul.png','Comida de Rasta azul',7,8,-3,0],['53_comida_Chico_rosa.png','Comida de Rasta rosa',7,8,-3,0],['54_carne.png','Carne',12,17,2,2],['55_pescado.png','Pescado',12,16,3,3],['56_pechuga_pollo.png','Pechuga de pollo',12,17,4,3],['57_zanahoria.png','Zanahoria',6,10,4,3],['58_brocoli.png','Brócoli',6,10,4,4],['59_bacon.png','Bacon',10,14,-2,0],['60_verdura_de_hoja.png','Verdura de hoja',6,9,4,4],['61_tomate.png','Tomate',6,9,4,3]
 ];
 
 
@@ -1031,11 +1041,12 @@ function save(){
   localStorage.setItem('yafiLocalActivity',JSON.stringify(state.localActivity||[]));
   persistGame();
 }
+function incCounter(key,amount=1){const n=Number(localStorage.getItem(key)||0)+Number(amount||0);localStorage.setItem(key,String(n));return n;}
 function spend(cost){
   if(state.points<cost){toast(`Necesitas ${cost} ⭐ y tienes ${state.points} ⭐`);return false;}
   state.points-=cost;render();return true;
 }
-function gain(n){state.points+=n;playSfx('coin');render();}
+function gain(n){state.points+=n;incCounter('yafi_lifetime_points',n);playSfx('coin');render();}
 function change(delta){for(const[k,v] of Object.entries(delta))state[k]=clamp(state[k]+v);render();}
 function render(){
   $('#points').textContent=Math.floor(state.points);
@@ -1060,70 +1071,44 @@ function applyElapsedTime(){
 applyElapsedTime();
 
 function foodMenu(){
-  const cards=FOOD_DATA.map((f,i)=>{
-    const [file,name,cost,hunger,energy,health]=f;
-    const disabled=state.points<cost?'disabled':'';
-    return `<button class="menu-item food-choice food-card" data-i="${i}" ${disabled}>
-      <img class="food-img" src="assets/food/${file}" alt="${name}">
-      <strong>${name}</strong>
-      <small>⭐ ${cost} · +${hunger} hambre${energy?` · ${energy>0?'+':''}${energy} energía`:''}${health?` · +${health} salud`:''}</small>
-    </button>`;
-  }).join('');
-  body.innerHTML=`<div class="shop-head"><span>⭐ ${state.points}</span><span>🍽️ TIENDA DE COMIDA</span></div><p class="shop-note">Compra comida con tus estrellas. Las frutas y verduras cuidan mejor la salud.</p><div class="menu-grid food-shop">${cards}</div>`;
+  const cards=FOOD_DATA.map((f,i)=>{const [file,name,cost,hunger,energy,health]=f;const disabled=state.points<cost?'disabled':'';return `<button class="menu-item food-choice food-card" data-i="${i}" ${disabled}><img class="food-img" src="assets/food/${file}" alt="${name}"><strong>${name}</strong><small>⭐ ${cost} · +${hunger} hambre${energy?` · ${energy>0?'+':''}${energy} energía`:''}${health?` · ${health>0?'+':''}${health} salud`:''}</small></button>`;}).join('');
+  body.innerHTML=`<div class="shop-head"><span>⭐ ${state.points}</span><span>🍽️ COMIDA</span></div><p class="shop-note">Cada comida tiene personalidad: unas llenan mucho, otras dan energía o salud y las guarradas pueden pasar factura. Yafi tiene opinión sobre TODO. 🐶</p><div class="menu-grid food-shop">${cards}</div>`;
   body.querySelectorAll('.food-choice').forEach(b=>b.addEventListener('click',()=>{
-    const f=FOOD_DATA[Number(b.dataset.i)];
-    if(!f || state.points<f[2]){ if(f)toast(`Necesitas ${f[2]} ⭐`); return; }
-    const [file,name,cost,hunger,energy,health]=f;
-    closeModal();
-    state.points-=cost;
-    change({hunger,energy,health,mood:3});
-    playSfx('eat');
-    personalityFoodReaction(name,health);
-    toast(`Has comprado ${name} por ${cost} ⭐`); logActivity('action',`ha comido ${name}`,'🍽️');
+    const f=FOOD_DATA[Number(b.dataset.i)]; if(!f||state.points<f[2]){if(f)toast(`Necesitas ${f[2]} ⭐`);return;}
+    const [file,name,cost,hunger,energy,health]=f; state.points-=cost;
+    const moodDelta=YAFI_DISLIKED_FOODS.has(name)?-3:(YAFI_FAVOURITE_FOODS.has(name)?5:2);
+    const healthDelta=YAFI_DISLIKED_FOODS.has(name)?Math.min(health,-1):health;
+    change({hunger,energy,health:healthDelta,mood:moodDelta}); playSfx('eat'); personalityFoodReaction(name,healthDelta);
+    incCounter('yafi_foods_bought'); persistGame(); logActivity('action',`ha comido ${name}`,'🍽️'); toast(`Yafi: ${name} 🐶`); closeModal();
   }));
 }
 
 function careMenu(){
-  const options=[
-    ['🫂','Acariciar',3,15,'love'],['🪮','Cepillarlo',2,12,'happy'],['🐾','Rascarle la barriga',2,14,'love'],
-    ['👂','Rascarle detrás de las orejas',2,13,'love'],['🎾','Lanzarle la pelota',3,16,'playful'],['🦴','Darle un hueso',2,10,'bone'],
-    ['🥩','Darle un premio',4,14,'eat'],['🐕','Dar un paseo',5,20,'happy'],['👃','Dejarle olfatear todo',2,12,'curious'],
-    ['🛁','Bañarlo',4,8,'surprised'],['🗣️','Decirle "buen chico"',1,9,'happy'],['🎵','Ponerle música',4,10,'music'],
-    ['📞','Llamarlo',5,12,'wave'],['🧍','Jugar con Rasta',2,10,'caring'],['🛏️','Dejarle descansar',0,25,'sleep']
-  ];
-  body.innerHTML=`<div class="shop-head"><span>⭐ ${state.points}</span><span>🐶 CARIÑO DE PERRO</span></div><p class="shop-note">Haz cosas que haría un perro de verdad 🐾</p><div class="menu-grid">${options.map(o=>`<button class="menu-item care-choice" data-cost="${o[2]}" data-v="${o[3]}" data-name="${o[1]}" data-face="${o[4]}" ${state.points<o[2]?'disabled':''}><span class="emoji">${o[0]}</span><strong>${o[1]}</strong><small>${o[2]?'⭐ '+o[2]:'GRATIS'} · +${o[3]}</small></button>`).join('')}</div>`;
+  const options=[['🫂','Acariciar',4,13,'love'],['🪮','Cepillarlo',3,10,'happy'],['🐾','Rascarle la barriga',3,15,'love'],['👂','Rascarle detrás de las orejas',3,14,'love'],['🎾','Lanzarle la pelota',5,16,'playful'],['🦴','Darle un hueso',4,9,'bone'],['🥩','Darle un premio',7,12,'eat'],['🐕','Dar un paseo',8,20,'happy'],['👃','Dejarle olfatear todo',3,11,'thinking'],['🛁','Bañarlo',6,7,'surprised'],['🗣️','Decirle "buen chico"',2,8,'happy'],['🎵','Ponerle música',6,10,'music'],['📞','Llamarlo',7,11,'wave'],['🧍','Jugar con Rasta',4,11,'caring'],['🛏️','Dejarle descansar',0,25,'sleep']];
+  body.innerHTML=`<div class="shop-head"><span>⭐ ${state.points}</span><span>🐶 CARIÑO DE PERRO</span></div><p class="shop-note">Cada cosa cambia a Yafi de forma distinta. Dormir es gratis; el resto cuesta estrellas para que haya progresión sin ser frustrante. 🐾</p><div class="menu-grid">${options.map(o=>`<button class="menu-item care-choice" data-cost="${o[2]}" data-v="${o[3]}" data-name="${o[1]}" data-face="${o[4]}" ${state.points<o[2]?'disabled':''}><span class="emoji">${o[0]}</span><strong>${o[1]}</strong><small>${o[2]?'⭐ '+o[2]:'GRATIS'} · +${o[3]}</small></button>`).join('')}</div>`;
   body.querySelectorAll('.care-choice').forEach(b=>b.addEventListener('click',()=>{
     const name=b.dataset.name,face=b.dataset.face,cost=Number(b.dataset.cost),v=Number(b.dataset.v);
-    if(face==='sleep'){
-      if(sleepTimer) clearTimeout(sleepTimer); closeModal(); setFace('sleep','Zzz... 😴','anim-pop',['💤','💤']);
-      $('.room').classList.add('sleeping'); change({energy:v,health:2,mood:2}); toast('Yafi se ha tumbado a dormir 🌙');
-      sleepTimer=setTimeout(()=>{$('.room').classList.remove('sleeping');setFace('normal','Ya eztoy despierto 😴','anim-pop',['✨']);sleepTimer=null;},5000); return;
-    }
-    if(state.points<cost){toast(`Necesitas ${cost} ⭐`);return;}
-    closeModal();
-    state.points-=cost;
-    change({mood:v,energy:name==='Dar un paseo'?3:0});
-    const CARE_REACTIONS={
-      'Acariciar':['love','Mmmm... zí, zí... ahí me guzta. 🥰🐾','anim-happy',['❤️','🐾'],'happyBark'],
-      'Cepillarlo':['happy','Qué bien me dehaz el pelo... parezco un señor elegante. 😌🪮','anim-pop',['✨'],'pant'],
-      'Rascarle la barriga':['love','AHHHH... ahí zí. No pares. 😌🐾','anim-happy',['❤️❤️'],'happyBark'],
-      'Rascarle detrás de las orejas':['love','EZO. JUSTO AHÍ. 😌👂','anim-bounce',['❤️','✨'],'happyBark'],
-      'Lanzarle la pelota':['playful','¡LA PELOTA! ¡LA PELOTA! 🎾🐶','anim-happy',['🎾','🐾'],'happyBark'],
-      'Darle un hueso':['bone','¿UN HUEZO? Ahora zí que hablamos. 🦴😎','anim-bounce',['🦴','⭐'],'happyBark'],
-      'Darle un premio':['eat','Premiooo... qué bien me conoces. 😋🐾','anim-bounce',['🥩','❤️'],'eat'],
-      'Dar un paseo':['happy','¡PASEO! ¡VAMOZ FUERA! 🐕💨','anim-happy',['🐾','💨'],'happyBark'],
-      'Dejarle olfatear todo':['curious','Espera... necesito oler TODO. 👃🐾','anim-pop',['👃','❓'],'pant'],
-      'Bañarlo':['sad','AHHHG, NO ME GUZTA BAÑADME. 😭🛁','anim-shake',['💧','😭'],'cry'],
-      'Decirle "buen chico"':['shy','¿Buen chico...? No me pongaz colorado. 🥺❤️','anim-pop',['💕'],'happyBark'],
-      'Ponerle música':['music','Eza canción zí me guzta. 🎵🐶','anim-happy',['🎵','❤️'],'happyBark'],
-      'Llamarlo':['wave','¿Me llamabaz? Ya voy, nenaz. 🐶📞','anim-pop',['📞','🐾'],'bark'],
-      'Jugar con Rasta':['caring','¡Rasta! Venga, a jugar. 🧍🐶','anim-happy',['🧍','❤️'],'happyBark']
+    if(face==='sleep'){if(sleepTimer)clearTimeout(sleepTimer);closeModal();setFace('sleep','Zzzz... no me despertéiz. 😴🐾','anim-pop',['💤','💤']);$('.room').classList.add('sleeping');change({energy:v,health:2,mood:2});incCounter('yafi_sleeps');playSfx('snore');sleepTimer=setTimeout(()=>{$('.room').classList.remove('sleeping');setFace('normal','Ya eztá, humanoz. Necesitaba eza siesta. 😴','anim-pop',['✨']);playSfx('happyBark');sleepTimer=null;},5000);return;}
+    if(state.points<cost){toast(`Necesitas ${cost} ⭐`);return;} closeModal(); state.points-=cost;
+    const reactions={
+      'Acariciar':['love','Mmmm... zí, zí... ahí me guzta. 🥰🐾','anim-happy',['❤️','🐾'],'happyBark',{mood:2}],
+      'Cepillarlo':['happy','Qué bien me dehaz el pelo... parezco un señor elegante. 😌🪮','anim-pop',['✨'],'pant',{mood:1,health:1}],
+      'Rascarle la barriga':['love','AHHHH... ahí zí. No pares. 😌🐾','anim-happy',['❤️❤️'],'happyBark',{mood:3,energy:1}],
+      'Rascarle detrás de las orejas':['love','EZO. JUSTO AHÍ. 😌👂','anim-bounce',['❤️','✨'],'happyBark',{mood:3}],
+      'Lanzarle la pelota':['playful','¡LA PELOTA! ¡LA PELOTA! 🎾🐶','anim-happy',['🎾','🐾'],'happyBark',{mood:2,energy:-2}],
+      'Darle un hueso':['bone','¿UN HUEZO? Ahora zí que hablamos. 🦴😎','anim-bounce',['🦴','⭐'],'happyBark',{mood:2}],
+      'Darle un premio':['eat','Premiooo... qué bien me conoces. 😋🐾','anim-bounce',['🥩','❤️'],'eat',{mood:2,hunger:5}],
+      'Dar un paseo':['happy','¡PASEO! ¡VAMOZ FUERA! 🐕💨','anim-happy',['🐾','💨'],'happyBark',{mood:4,energy:-3,health:1}],
+      'Dejarle olfatear todo':['thinking','Epera... necesito oler TODO. 👃🐾','anim-pop',['👃','❓'],'pant',{mood:2,energy:-1}],
+      'Bañarlo':['sad','AHHHG, NO ME GUZTA BAÑADME. 😭🛁','anim-shake',['💧','😭'],'cry',{mood:-3,health:3}],
+      'Decirle "buen chico"':['shy','¿Buen chico...? No me pongaz colorado. 🥺❤️','anim-pop',['💕'],'happyBark',{mood:2}],
+      'Ponerle música':['music','Eza canción zí me guzta. 🎵🐶','anim-happy',['🎵','❤️'],'happyBark',{mood:3,energy:1}],
+      'Llamarlo':['wave','¿Me llamabaz? Ya voy, nenaz. 🐶📞','anim-pop',['📞','🐾'],'bark',{mood:2}],
+      'Jugar con Rasta':['caring','¡Rasta! Venga, a jugar. 🧍🐶','anim-happy',['🧍','❤️'],'happyBark',{mood:3,energy:-1}]
     };
-    const r=CARE_REACTIONS[name]||[face,`${name} 🐾`,'anim-pop',['🐾','❤️'],'bark'];
-    setFace(r[0],r[1],r[2],r[3]); playSfx(r[4]);
-    toast(`Yafi: ${name} 🐶`); logActivity('action',`ha hecho: ${name}`,'🐾');
-    if(name==='Lanzarle la pelota') setTimeout(()=>setFace('playful','¡Mááás! Tíramela otra vez 🎾🐶','anim-happy',['🎾']),700);
-    if(name==='Rascarle la barriga') setTimeout(()=>setFace('love','Mmmm... ahí zí 😌🐾','anim-happy',['❤️']),700);
+    const r=reactions[name]||[face,`${name} 🐾`,'anim-pop',['🐾','❤️'],'bark',{mood:1}]; change(r[5]); setFace(r[0],r[1],r[2],r[3]); playSfx(r[4]); incCounter('yafi_care_actions'); persistGame(); toast(`Yafi: ${name} 🐶`); logActivity('action',`ha hecho: ${name}`,'🐾');
+    if(name==='Lanzarle la pelota')setTimeout(()=>{setFace('playful','¡Mááás! Tíramela otra vez 🎾🐶','anim-happy',['🎾']);playSfx('happyBark');},700);
+    if(name==='Rascarle la barriga')setTimeout(()=>{setFace('love','Mmmm... ahí zí 😌🐾','anim-happy',['❤️']);playSfx('pant');},700);
   }));
 }
 
@@ -1133,16 +1118,16 @@ function petChico(){
   if(chicoPetTimer)clearTimeout(chicoPetTimer);
   wrap.classList.add('hidden-chico');
   setFace('caring','¡Rasta! 🐶❤️','anim-pop',['❤️','🐾']);
-  change({mood:10}); state.points+=2; render();
+  change({mood:10}); state.points+=2; incCounter('yafi_chico_pets'); render();
   toast('El perro está jugando con Rasta 🐶❤️');
   logActivity('action','ha jugado con Rasta','🧍');
   chicoPetTimer=setTimeout(()=>{wrap.classList.remove('hidden-chico');showChicoFrame();say('Rasta ha vuelto 😎');chicoPetTimer=null;},3500);
 }
 
 function memeMenu(){
-  body.innerHTML=`<div class="shop-head"><span>⭐ ${state.points}</span><span>😂 MEME · 3 ⭐</span></div><p>Sube una foto o meme. Cuesta 3 ⭐ y queda guardado en la galería.</p><div class="upload">🖼️<br><strong>Selecciona una foto</strong><br><button class="primary" id="uploadBtn" type="button" ${state.points<3?'disabled':''}>Subir foto · 3 ⭐</button></div><div class="feed">${state.feed.length?state.feed.slice().reverse().map(f=>`<div class="feed-item"><img class="thumb" src="${f.src}" alt="meme"><div><strong>${f.user}</strong><br><small>${f.text}</small></div></div>`).join(''):'Todavía no hay memes.'}</div>`;
+  body.innerHTML=`<div class="shop-head"><span>⭐ ${state.points}</span><span>😂 MEME · 5 ⭐</span></div><p>Sube una foto o meme. Cuesta 5 ⭐ y queda guardado en la galería.</p><div class="upload">🖼️<br><strong>Selecciona una foto</strong><br><button class="primary" id="uploadBtn" type="button" ${state.points<5?'disabled':''}>Subir foto · 5 ⭐</button></div><div class="feed">${state.feed.length?state.feed.slice().reverse().map(f=>`<div class="feed-item"><img class="thumb" src="${f.src}" alt="meme"><div><strong>${f.user}</strong><br><small>${f.text}</small></div></div>`).join(''):'Todavía no hay memes.'}</div>`;
   $('#uploadBtn').addEventListener('click',()=>{
-    if(!spend(3))return;
+    if(!spend(5))return;
     $('#photoInput').click();
   });
 }
@@ -1151,7 +1136,7 @@ function memeMenu(){
 $('#photoInput').onchange=null;
 $('#photoInput').addEventListener('change',e=>{
   const file=e.target.files[0];
-  if(!file){state.points+=3;render();return;}
+  if(!file){state.points+=5;render();return;}
   const reader=new FileReader();
   reader.onload=()=>{
     playSfx('flash');
@@ -1177,7 +1162,7 @@ function playMenu(){
   </div>`;
   body.querySelectorAll('[data-game]').forEach(b=>b.addEventListener('click',()=>{
     const costs={platform:8,spikes:7,cells:10,pizza:6};
-    if(spendEnergyForGame(costs[b.dataset.game])) { logActivity('action',`ha empezado a jugar: ${b.parentElement.querySelector('strong')?.textContent||b.dataset.game}`,'🎮'); miniGame(b.dataset.game); }
+    if(spendEnergyForGame(costs[b.dataset.game])) { incCounter('yafi_games_played'); logActivity('action',`ha empezado a jugar: ${b.parentElement.querySelector('strong')?.textContent||b.dataset.game}`,'🎮'); miniGame(b.dataset.game); }
   }));
 }
 function spendEnergyForGame(cost){
@@ -1195,36 +1180,36 @@ function achievementsMenu(){
   const pets=Number(localStorage.getItem('yafi_chico_pets')||0);
   const memes=state.photos.length;
   const a=[
-    ['🍕','Primer bocado',foods>=1,'Comprar tu primera comida'],
-    ['😂','Proveedor oficial de memes',memes>=1,'Subir tu primer meme'],
-    ['🧍','Encantador de Rastas',pets>=1,'Acariciar a Rasta por primera vez'],
-    ['🎬','Director de sofá',cares>=3,'Hacer 3 acciones de cariño'],
-    ['💤','Profesional de la siesta',sleeps>=3,'Dormir 3 veces'],
-    ['🥦','Nutricionista de guardia',foods>=5,'Comprar 5 comidas'],
-    ['🍕','Adicto a la pizza',foods>=3,'Comprar 3 comidas'],
-    ['🫂','Amigo intensito',cares>=10,'Hacer 10 acciones de cariño'],
-    ['🎮','No he venido a cuidar al Tamagotchi',games>=1,'Jugar tu primera partida'],
-    ['🕹️','Cliente habitual del arcade',games>=10,'Jugar 10 partidas'],
-    ['🏆','Yafi no se rinde',wins>=5,'Ganar 5 minijuegos'],
-    ['⭐','Banquero de estrellas',state.points>=100,'Tener 100 ⭐ a la vez'],
-    ['💸','Adiós, ahorros',lifetime>=100,'Acumular 100 ⭐ ganadas'],
-    ['🌟','Fortuna absurda',lifetime>=300,'Acumular 300 ⭐ ganadas'],
-    ['🚀','Economía espacial',lifetime>=1000,'Acumular 1.000 ⭐ ganadas'],
-    ['❤️','Salud de hierro',state.health>=99,'Llegar al 100% de salud'],
-    ['⚡','Batería nuclear',state.energy>=99,'Llegar al 100% de energía'],
-    ['💖','Buen rollo máximo',state.mood>=99,'Llegar al 100% de ánimo'],
-    ['🍗','Yafi bien alimentado',state.hunger>=99,'Llegar al 100% de hambre'],
-    ['👑','Modo dios',state.health>=99&&state.energy>=99&&state.mood>=99&&state.hunger>=99,'Tener las 4 barras al 100%'],
-    ['📸','Fotógrafo oficial',memes>=5,'Subir 5 memes'],
-    ['💬','Casi vivimos aquí',cares>=20,'Hacer 20 acciones de cariño'],
-    ['😴','Rey de la almohada',sleeps>=10,'Dormir 10 veces'],
-    ['🎮','Arcade legendario',wins>=10,'Ganar 10 minijuegos'],
-    ['🏅','Leyenda de Yafi',lifetime>=2500,'Acumular 2.500 ⭐ ganadas']
+    ['🍕','Y aquí empieza el festín',foods>=1,'Comprar tu primera comida'],
+    ['😂','Ministerio del Meme',memes>=1,'Subir tu primer meme'],
+    ['🧍','Rasta, vuelve a casa',pets>=1,'Acariciar a Rasta por primera vez'],
+    ['🎬','Consejero canino profesional',cares>=3,'Hacer 3 acciones de cariño'],
+    ['💤','Licenciado en horizontal',sleeps>=3,'Dormir 3 veces'],
+    ['🥦','Nutricionista del barrio',foods>=5,'Comprar 5 comidas'],
+    ['🍕','La mafia de la pizza',foods>=3,'Comprar 3 comidas'],
+    ['🫂','Pesado pero querido',cares>=10,'Hacer 10 acciones de cariño'],
+    ['🎮','He venido a jugar, no a cuidar',games>=1,'Jugar tu primera partida'],
+    ['🕹️','Residente del arcade',games>=10,'Jugar 10 partidas'],
+    ['🏆','Yafi se cree e-sports',wins>=5,'Ganar 5 minijuegos'],
+    ['⭐','Magnate de la croqueta',state.points>=100,'Tener 100 ⭐ a la vez'],
+    ['💸','Adiós, dinerito',lifetime>=100,'Acumular 100 ⭐ ganadas'],
+    ['🌟','Tío Gilito del barrio',lifetime>=300,'Acumular 300 ⭐ ganadas'],
+    ['🚀','Economía completamente absurda',lifetime>=1000,'Acumular 1.000 ⭐ ganadas'],
+    ['❤️','Yafi en garantía',state.health>=99,'Llegar al 100% de salud'],
+    ['⚡','Perro nuclear',state.energy>=99,'Llegar al 100% de energía'],
+    ['💖','Cero dramas',state.mood>=99,'Llegar al 100% de ánimo'],
+    ['🍗','No se le oye el estómago',state.hunger>=99,'Llegar al 100% de hambre'],
+    ['👑','Modo perro dios',state.health>=99&&state.energy>=99&&state.mood>=99&&state.hunger>=99,'Tener las 4 barras al 100%'],
+    ['📸','Paparazzi de Yafi',memes>=5,'Subir 5 memes'],
+    ['💬','Prácticamente vivimos aquí',cares>=20,'Hacer 20 acciones de cariño'],
+    ['😴','Dueño de la almohada',sleeps>=10,'Dormir 10 veces'],
+    ['🎮','Arcade demente',wins>=10,'Ganar 10 minijuegos'],
+    ['🏅','Leyenda del parque',lifetime>=2500,'Acumular 2.500 ⭐ ganadas']
   ];
   const unlocked=a.filter(x=>x[2]).length;
   body.innerHTML=`<div class="shop-head"><span>🏆 LOGROS</span><span>${unlocked}/${a.length} ⭐ ${state.points}</span></div><div class="achievement-progress"><div style="width:${Math.round(unlocked/a.length*100)}%"></div></div>`+a.map(x=>`<div class="feed-item achievement ${x[2]?'unlocked':''}"><span style="font-size:26px">${x[0]}</span><div><strong>${x[1]}</strong><br><small>${x[2]?'✓ Desbloqueado':'🔒 Bloqueado'} · ${x[3]}</small></div></div>`).join('');
 }
-function homeMenu(){body.innerHTML=`<div class="shop-head"><span>⭐ ${state.points}</span><span>ESTADO</span></div><p>Las estrellas sirven para comprar comida, cariño y juguetes. El estado de Yafi cambia con el tiempo aunque cierres la página.</p><div class="status-hints"><div>🍕 Hambre: −1 cada 5 min</div><div>⚡ Energía: −1 cada 8 min despierto</div><div>💗 Ánimo: −1 cada 10 min</div><div>❤️ Salud: baja si hambre/energía están muy bajas</div><div>💤 Dormir: 5 s · +25 energía · +2 salud</div></div><button class="primary" id="reset" type="button">Reiniciar partida</button>`;$('#reset').addEventListener('click',()=>{localStorage.clear();location.reload()})}
+function homeMenu(){body.innerHTML=`<div class="shop-head"><span>⭐ ${state.points}</span><span>ESTADO</span></div><p>Las estrellas sirven para comer, hacer planes y llenar el césped de juguetes. Las compras se guardan aunque cierres la página.</p><div class="status-hints"><div>🍕 Hambre: −1 cada 5 min</div><div>⚡ Energía: −1 cada 8 min despierto</div><div>💗 Ánimo: −1 cada 10 min</div><div>❤️ Salud: baja si hambre/energía están muy bajas</div><div>💤 Dormir: 5 s · +25 energía · +2 salud</div></div><button class="primary" id="reset" type="button">Reiniciar partida</button>`;$('#reset').addEventListener('click',()=>{localStorage.clear();location.reload()})}
 
 // Patch the game rewards/energy persistence without changing the already-tested minigame loops.
 const originalMiniGame=miniGame;
@@ -1380,10 +1365,8 @@ function randomPersonalityScene(){
   if(iahnAway||document.hidden||!iahnPersonalityStarted)return;
   if(!iahnFaceBag.length)refillFaceBag(); const key=iahnFaceBag.shift(); iahnLastRandomFace=key;
   const scene=YAFI_RANDOM_SCENES[key]||YAFI_RANDOM_SCENES.normal; personalityVisual(key,scene[0],scene[1],scene[2]);
-  if(key==='celebrate')playSfx('yay');
-  else if(['laugh','love','happy','playful','wow','superWow','bark'].includes(key))playSfx('happyBark');
-  else if(['sad','lyingSad'].includes(key))playSfx('cry');
-  else if(['sleep','sleepy','relaxed'].includes(key))playSfx('pant');
+  const faceSound={celebrate:'yay',laugh:'laugh',love:'happyBark',happy:'happyBark',playful:'happyBark',wow:'happyBark',superWow:'happyBark',bark:'bark',askingLove:'pant',angry:'bark',sad:'cry',lyingSad:'cry',sleep:'snore',sleepy:'snore',relaxed:'pant',eat:'eat',bone:'eat',drink:'pant',music:'happyBark',study:'laugh',thinking:'bark',hood:'laugh',cat:'happyBark',confused:'bark',cool:'laugh',nervous:'bark',shy:'happyBark',tired:'pant',phone:'laugh',writing:'click',grumpy:'bark',surprised:'bark',stretch:'pant',scratch:'pant',wave:'happyBark',caring:'happyBark',wink:'laugh',wink2:'laugh',profile:'bark',noMolestes:'bark',tongue:'happyBark',shocked2:'bark'};
+  playSfx(faceSound[key]||'bark');
   schedulePersonalityScene();
 }
 function schedulePersonalityScene(){clearTimeout(iahnRandomTimer);iahnRandomTimer=setTimeout(randomPersonalityScene,12000+Math.random()*18000);}
@@ -1479,8 +1462,8 @@ function personalityFoodReaction(name,healthGain=0){
   clearTimeout(window.__yafiFoodReactionTimer);
   window.__yafiFoodReactionTimer=setTimeout(()=>{
     if(iahnAway)return;
-    if(face==='superWow'||face==='wow') personalityVisual('eat','¡ZÍ! Dame máz. 😋🐾','anim-bounce',['❤️','🍽️']);
-    else if(face==='sad') personalityVisual('cry','No quiero máz... 😭🐶','anim-shake',['💧']);
+    if(face==='superWow'||face==='wow'){personalityVisual('eat','¡ZÍ! Dame máz. 😋🐾','anim-bounce',['❤️','🍽️']);playSfx('eat');}
+    else if(face==='sad'){personalityVisual('cry','No quiero máz... 😭🐶','anim-shake',['💧']);playSfx('cry');}
   },850);
 }
 
@@ -1638,9 +1621,12 @@ if(!window.__YAFI_INTERACTION_PATCH){
     closeModal();
     // Ejecutar después de cerrar el modal y del siguiente frame para que la reacción sea visible.
     requestAnimationFrame(()=>{
-      change({hunger,energy,health,mood:3});
+      const moodDelta=YAFI_DISLIKED_FOODS.has(name)?-3:(YAFI_FAVOURITE_FOODS.has(name)?5:2);
+      const healthDelta=YAFI_DISLIKED_FOODS.has(name)?Math.min(health,-1):health;
+      change({hunger,energy,health:healthDelta,mood:moodDelta});
       playSfx('eat');
-      personalityFoodReaction(name,health);
+      personalityFoodReaction(name,healthDelta);
+      incCounter('yafi_foods_bought');
       logActivity('action',`ha comido ${name}`,'🍽️');
       toast(`Yafi: ${name} 🐶`);
     });
